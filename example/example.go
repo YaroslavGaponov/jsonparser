@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"reflect"
 
 	"../../jsonparser"
 )
@@ -42,7 +43,7 @@ func main() {
 	})
 
 	parser.OnValue(func(value interface{}) {
-		fmt.Println("Value =", value)
+		fmt.Println("Value ", reflect.TypeOf(value) , value)
 	})
 
 	if err := parser.Run(); err != nil {

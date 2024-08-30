@@ -13,6 +13,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"reflect"
 
 	"github.com/YaroslavGaponov/jsonparser"
 )
@@ -51,7 +52,7 @@ func main() {
 	})
 
 	parser.OnValue(func(value interface{}) {
-		fmt.Println("Value =", value)
+		fmt.Println("Value ", reflect.TypeOf(value) , value)
 	})
 
 	if err := parser.Run(); err != nil {
@@ -67,22 +68,22 @@ func main() {
 Array start
 Object start
 Key = _id
-Value = 66cf3d8586e785a0362da88f
+Value  string 66cf3d8586e785a0362da88f
 Key = index
-Value = 0
+Value  int 0
 Key = guid
-Value = 00fa251f-35a0-48b8-8104-30ae5ab4b434
+Value  string 00fa251f-35a0-48b8-8104-30ae5ab4b434
 Key = isActive
-Value = true
+Value  bool true
 Key = balance
-Value = $3522.79
+Value  string $3522.79
 Key = picture
-Value = http://placehold.it/32x32
+Value  string http://placehold.it/32x32
 Key = age
-Value = 20
+Value  int 20
 Key = eyeColor
-Value = green
+Value  string green
 Key = name
-Value = JeannieDalton
+Value  string JeannieDalton
 Key = gender
 ```

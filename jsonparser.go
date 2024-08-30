@@ -3,6 +3,7 @@ package jsonparser
 import (
 	"fmt"
 	"io"
+	"strconv"
 )
 
 type JSONType uint8
@@ -150,7 +151,7 @@ func (parser *JSONParser) flush() {
 			parser.onKey(string(parser.buffer))
 			parser.keyvalue = Value
 		} else {
-			parser.onValue(string(parser.buffer))
+			parser.onValue(cast(parser.buffer))
 			if parser.path[len(parser.path)-1] == Object {
 				parser.keyvalue = Key
 			} else {
@@ -158,5 +159,22 @@ func (parser *JSONParser) flush() {
 			}
 		}
 		parser.buffer = parser.buffer[:0]
+	}
+}
+
+func cast(value []rune) interface{} {
+	s := string(value)
+	switch s {
+	case "true":
+		return true
+	case "false":
+		return false
+	case "null":
+		return Null
+	default:
+		if num, err := strconv.Atoi(s); err == nil {
+			return num
+		}
+		return s
 	}
 }
