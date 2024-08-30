@@ -27,6 +27,8 @@ const (
 type JSONParser struct {
 	stream io.RuneReader
 
+	delimiters map[rune]interface{}
+
 	path       []JSONType
 	buffer     []rune
 	flagString bool
@@ -43,8 +45,12 @@ type JSONParser struct {
 }
 
 func New(stream io.RuneReader) *JSONParser {
+
 	return &JSONParser{
-		stream:     stream,
+		stream: stream,
+
+		delimiters: map[rune]interface{}{' ': true, ':': true, '\n': true, '\t': true, ',': true},
+
 		path:       make([]JSONType, 0, 10),
 		keyvalue:   Key,
 		flagString: false,
@@ -129,17 +135,16 @@ func (parser *JSONParser) Run() error {
 			parser.flush()
 			parser.flagString = !parser.flagString
 
-		case " ":
-		case "\t":
-		case "\n":
-		case ",":
-			if !parser.flagString {
-				parser.flush()
-			}
-
 		default:
-			parser.buffer = append(parser.buffer, r)
-
+			if parser.flagString {
+				parser.buffer = append(parser.buffer, r)
+			} else {
+				if _, ok := parser.delimiters[r]; ok {
+					parser.flush()
+				} else {
+					parser.buffer = append(parser.buffer, r)
+				}
+			}
 		}
 	}
 	return nil
