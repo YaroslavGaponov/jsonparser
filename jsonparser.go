@@ -26,10 +26,10 @@ const (
 type JSONParser struct {
 	stream io.RuneReader
 
-	path     []JSONType
-	buffer   []rune
-	isString bool
-	keyvalue KeyValue
+	path       []JSONType
+	buffer     []rune
+	flagString bool
+	keyvalue   KeyValue
 
 	onStartObject func()
 	onEndObject   func()
@@ -43,11 +43,20 @@ type JSONParser struct {
 
 func New(stream io.RuneReader) *JSONParser {
 	return &JSONParser{
-		stream:   stream,
-		path:     make([]JSONType, 0, 5),
-		keyvalue: Key,
-		isString: false,
-		buffer:   make([]rune, 0, 512),
+		stream:     stream,
+		path:       make([]JSONType, 0, 10),
+		keyvalue:   Key,
+		flagString: false,
+		buffer:     make([]rune, 0, 512),
+
+		onStartObject: func() {},
+		onEndObject:   func() {},
+
+		onStartArray: func() {},
+		onEndArray:   func() {},
+
+		onKey:   func(name string) {},
+		onValue: func(value interface{}) {},
 	}
 }
 
@@ -108,7 +117,7 @@ func (parser *JSONParser) Run() error {
 			parser.keyvalue = Key
 
 		case ":":
-			if !parser.isString {
+			if !parser.flagString {
 				parser.flush()
 				parser.keyvalue = Value
 			} else {
@@ -117,13 +126,13 @@ func (parser *JSONParser) Run() error {
 
 		case "\"":
 			parser.flush()
-			parser.isString = !parser.isString
+			parser.flagString = !parser.flagString
 
 		case " ":
 		case "\t":
 		case "\n":
 		case ",":
-			if !parser.isString {
+			if !parser.flagString {
 				parser.flush()
 			}
 
@@ -148,6 +157,6 @@ func (parser *JSONParser) flush() {
 				parser.keyvalue = Value
 			}
 		}
-		parser.buffer = []rune{}
+		parser.buffer = parser.buffer[:0]
 	}
 }
