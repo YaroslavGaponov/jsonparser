@@ -12,8 +12,7 @@ func TestSimpleValueIsString(t *testing.T) {
 		"hello": "welcome"
 	}`
 
-	reader := strings.NewReader(o)
-	parser := jsonparser.New(reader)
+	parser := jsonparser.New(strings.NewReader(o))
 
 	result := []string{}
 
@@ -38,7 +37,7 @@ func TestSimpleValueIsString(t *testing.T) {
 	})
 
 	if err := parser.Run(); err != nil {
-		t.Errorf("error: %s", err)
+		t.Fatal(err)
 	}
 
 	if len(result) != 4 {
