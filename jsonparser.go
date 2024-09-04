@@ -44,9 +44,9 @@ type JSONParser struct {
 	onValue func(value interface{})
 }
 
-func New(stream io.RuneReader) *JSONParser {
+func New(stream io.RuneReader) JSONParser {
 
-	return &JSONParser{
+	return JSONParser{
 		stream: stream,
 
 		delimiters: map[rune]interface{}{' ': true, ':': true, '\n': true, '\t': true, ',': true},
